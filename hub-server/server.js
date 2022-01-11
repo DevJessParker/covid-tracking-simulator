@@ -4,18 +4,19 @@ const io = require('socket.io')(3000);
 const hub = io.of('/hub');
 const Log = require('../lib/log-generator.js');
 const Email = require('../lib/email-generator.js');
+const { app } = require('faker/lib/locales/en');
 let locations = [];
 
 //Global Connection
 hub.on('connection', socket => {
-  console.log('Initializing Setup...')
-  console.log(socket.id);
+  console.log('Initializing Setup for Covid Vaccine Simulation...');
+  // console.log(socket.id);
 
   socket.on('join-room', async (payload) => {  
-    let room = `${payload.storeNUM}`;
+    let room = `${payload.centerNUM}`;
     try {
     await socket.join(room);
-    locations.push(payload.storeNUM);
+    locations.push(payload.centerNUM);
     console.log('location list', locations);
     console.log('__ROOMS__', socket.rooms);
     } catch {
@@ -31,10 +32,10 @@ hub.on('connection', socket => {
     new Log('pickup', payload);
     hub.emit('pickup', payload);
   })
-  socket.on('pickup-scheduled', (payload) => {
+  socket.on('vaccine-requested', (payload) => {
     let log = new Log('pickup scheduled', payload);
     console.log(log);
-    hub.emit('pickup-scheduled', payload);
+    hub.emit('vaccine-requested', payload);
   });
   socket.on('in-transit', (payload) => {
     let log = new Log('in-transit', payload);
@@ -51,13 +52,13 @@ hub.on('connection', socket => {
     console.log(log);
     hub.emit('order-delayed', payload);
   });
-  socket.on('returned-to-vendor', (payload) => {
+  socket.on('unable-to-fulfill', (payload) => {
     let log = new Log('returned-to-vendor', payload);
     console.log(log);
     hub.emit('order-delayed', payload);
   });
   socket.on('send-email', (payload) => {
     const email = new Email(payload);
-    console.log('VENDOR: send email', email);
+    console.log('CRISIS CENTER: Confirmation of delivery email sent to origin center.', email);
   })
 })
