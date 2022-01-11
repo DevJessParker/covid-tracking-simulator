@@ -4,15 +4,16 @@ const io = require('socket.io-client');
 const server = io.connect('http://localhost:3000/hub');
 
 server.on('pickup-scheduled', (payload) => {
-  const delayVar = (Math.ceil(Math.random() * 10))
+  // const delayVar = (Math.ceil(Math.random() * 10))
   setTimeout(() => {
-    if (delayVar > 5) {
+    switch (Math.floor(Math.random() * 4)) {
+    case 1: 
       server.emit('in-transit', payload);
       console.log(`DRIVER: Order ${payload.order.orderID} is now IN TRANSIT`)
-    } else if (delayVar > 3 && delayVar <= 5) {
+    case 2: 
       server.emit('delayed', payload)
       console.log(`DRIVER: Order ${payload.order.orderID} is now DELAYED`)
-    } else if (delayVar > 0 && delayVar <= 3) {
+    case 3: 
       server.emit('returned-to-vendor', payload)
       console.log(`DRIVER: Order ${payload.order.orderID} has been RETURNED TO VENDOR`)
     }

@@ -8,6 +8,7 @@ let locations = [];
 
 //Global Connection
 hub.on('connection', socket => {
+  console.log('Initializing Setup...')
   console.log(socket.id);
 
   socket.on('join-room', async (payload) => {  
